@@ -161,7 +161,7 @@ UITextViewDelegate>
     self.removePhoto.enabled = NO;
     self.addPhoto.enabled = NO;
     
-    AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:@"http://broadsheet.ie"]];
+    AFHTTPRequestOperationManager *manager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:CBPApiURL]];
     NSData *imageData = UIImagePNGRepresentation(self.attachmentImage);
     
     __weak typeof(self) weakSelf = self;

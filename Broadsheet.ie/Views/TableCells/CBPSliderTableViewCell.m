@@ -13,6 +13,7 @@
 @interface CBPSliderTableViewCell()
 @property (nonatomic, assign) BOOL didUpdateConstraints;
 @property (nonatomic) UILabel *exampleLabel;
+@property (nonatomic) UISlider *slider;
 @end
 
 @implementation CBPSliderTableViewCell
@@ -25,6 +26,7 @@
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
         [self.contentView addSubview:self.exampleLabel];
+        [self.contentView addSubview:self.slider];
     }
     return self;
 }
@@ -32,7 +34,25 @@
 - (void)updateConstraints
 {
     if (!self.didUpdateConstraints) {
+        NSDictionary *views = @{@"exampleLabel": self.exampleLabel,
+                                @"slider": self.slider};
         
+        NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[exampleLabel]-[slider]-|"
+                                                                               options:NSLayoutFormatAlignAllLeft|NSLayoutFormatAlignAllRight
+                                                                               metrics:nil
+                                                                                 views:views];
+        
+        
+        for (NSLayoutConstraint *constraint in verticalConstraints) {
+            constraint.priority = UILayoutPriorityDefaultHigh;
+        }
+        
+        [self.contentView addConstraints:verticalConstraints];
+        
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-(20)-[exampleLabel]-(20)-|"
+                                                                                 options:0
+                                                                                 metrics:nil
+                                                                                   views:views]];
         self.didUpdateConstraints = YES;
     }
     
@@ -46,14 +66,8 @@
 }
 
 #pragma mark -
-- (void)setSlider:(UISlider *)slider
-{
-    _slider = slider;
-    _slider.frame = CGRectMake(CBPPadding, ceilf((44.0f - CGRectGetHeight(slider.frame)) / 2) + CGRectGetHeight(self.exampleLabel.frame), CGRectGetWidth(self.contentView.frame) - (CBPPadding * 2), CGRectGetHeight(slider.frame));
-
-    [_slider addTarget:self action:@selector(sliderChangedAction) forControlEvents:UIControlEventValueChanged];
-
-    [self.contentView addSubview:_slider];
+- (void)setFontSize:(CGFloat)fontSize {
+    self.slider.value = fontSize;
     
     [self sliderChangedAction];
 }
@@ -65,8 +79,48 @@
         _exampleLabel.text = NSLocalizedString(@"Move the slider to change the text size used in a post", nil);
         _exampleLabel.numberOfLines = 3;
         _exampleLabel.textAlignment = NSTextAlignmentCenter;
+        _exampleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     }
     
     return _exampleLabel;
+}
+
+- (CGFloat)fontSize {
+    return self.slider.value;
+}
+
+- (UISlider *)slider
+{
+    if (!_slider) {
+        _slider = [UISlider new];
+        _slider.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        _slider.minimumValue = CBPMinimumFontSize;
+        _slider.maximumValue = CBPMaximiumFontSize;
+        
+        UILabel *smallLabel = [UILabel new];
+        smallLabel.font = [UIFont systemFontOfSize:CBPMinimumFontSize];
+        smallLabel.text = @"A";
+        [smallLabel sizeToFit];
+        
+        UIGraphicsBeginImageContextWithOptions(smallLabel.frame.size, NO, 0.0);
+        [smallLabel.layer renderInContext: UIGraphicsGetCurrentContext()];
+        _slider.minimumValueImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        UILabel *largeLabel = [UILabel new];
+        largeLabel.font = [UIFont systemFontOfSize:CBPMaximiumFontSize];
+        largeLabel.text = @"A";
+        [largeLabel sizeToFit];
+        
+        UIGraphicsBeginImageContextWithOptions(largeLabel.frame.size, NO, 0.0);
+        [largeLabel.layer renderInContext: UIGraphicsGetCurrentContext()];
+        _slider.maximumValueImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        [_slider addTarget:self action:@selector(sliderChangedAction) forControlEvents:UIControlEventValueChanged];
+    }
+    
+    return _slider;
 }
 @end

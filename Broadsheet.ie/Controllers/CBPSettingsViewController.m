@@ -30,7 +30,6 @@ static NSString * const CBPSwitchTableViewCellIdentifier = @"CBPSwitchTableViewC
 @property (nonatomic) BButton *saveButton;
 @property (nonatomic) UILabel *sampleTextLabel;
 @property (nonatomic) UISwitch *systemFontSwitch;
-@property (nonatomic) UISlider *userFontSizeSlider;
 @property (nonatomic) UITextField *urlTextField;
 @end
 
@@ -73,8 +72,6 @@ static NSString * const CBPSwitchTableViewCellIdentifier = @"CBPSwitchTableViewC
     self.reminderSwitch.on = [defaults boolForKey:CBPDailyReminder];
     self.lockRotationSwitch.on = [defaults boolForKey:CBPLockRotation];
     self.systemFontSwitch.on = ([defaults floatForKey:CBPUserFontSize]) ? NO : YES;
-    
-    self.userFontSizeSlider.value = ([defaults floatForKey:CBPUserFontSize])? [defaults floatForKey:CBPUserFontSize] : CBPMinimumFontSize;
 
     [[GAI sharedInstance].defaultTracker set:kGAIScreenName
                                        value:@"Settings Screen"];
@@ -129,7 +126,9 @@ static NSString * const CBPSwitchTableViewCellIdentifier = @"CBPSwitchTableViewC
     if (self.systemFontSwitch.on) {
         [defaults removeObjectForKey:CBPUserFontSize];
     } else {
-        [defaults setFloat:self.userFontSizeSlider.value forKey:CBPUserFontSize];
+        CBPSliderTableViewCell *cell = (CBPSliderTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:3 inSection:1]];
+        
+        [defaults setFloat:cell.fontSize forKey:CBPUserFontSize];
     }
 
     [defaults synchronize];
@@ -219,7 +218,10 @@ static NSString * const CBPSwitchTableViewCellIdentifier = @"CBPSwitchTableViewC
         
         if (indexPath.row == 3) {
             CBPSliderTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CBPSliderTableViewCellIdentifier];
-            cell.slider = self.userFontSizeSlider;
+            cell.fontSize = ([[NSUserDefaults standardUserDefaults] floatForKey:CBPUserFontSize])? [[NSUserDefaults standardUserDefaults] floatForKey:CBPUserFontSize] : CBPMinimumFontSize;
+            
+            [cell setNeedsUpdateConstraints];
+            [cell setNeedsLayout];
             
             return cell;
         }
@@ -379,38 +381,6 @@ static NSString * const CBPSwitchTableViewCellIdentifier = @"CBPSwitchTableViewC
     }
     
     return _saveButton;
-}
-
-- (UISlider *)userFontSizeSlider
-{
-    if (!_userFontSizeSlider) {
-        _userFontSizeSlider = [UISlider new];
-        
-        _userFontSizeSlider.minimumValue = CBPMinimumFontSize;
-        _userFontSizeSlider.maximumValue = CBPMaximiumFontSize;
-                
-        UILabel *smallLabel = [UILabel new];
-        smallLabel.font = [UIFont systemFontOfSize:CBPMinimumFontSize];
-        smallLabel.text = @"A";
-        [smallLabel sizeToFit];
-        
-        UIGraphicsBeginImageContextWithOptions(smallLabel.frame.size, NO, 0.0);
-        [smallLabel.layer renderInContext: UIGraphicsGetCurrentContext()];
-        _userFontSizeSlider.minimumValueImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        UILabel *largeLabel = [UILabel new];
-        largeLabel.font = [UIFont systemFontOfSize:CBPMaximiumFontSize];
-        largeLabel.text = @"A";
-        [largeLabel sizeToFit];
-        
-        UIGraphicsBeginImageContextWithOptions(largeLabel.frame.size, NO, 0.0);
-        [largeLabel.layer renderInContext: UIGraphicsGetCurrentContext()];
-        _userFontSizeSlider.maximumValueImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-    }
-    
-    return _userFontSizeSlider;
 }
 
 - (UITextField *)urlTextField

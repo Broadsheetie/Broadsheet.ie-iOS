@@ -12,6 +12,5 @@ static const CGFloat CBPSliderTableViewCellHeight = 176.0;
 static NSString * const CBPSliderTableViewCellIdentifier = @"CBPSliderTableViewCellIdentifier";
 
 @interface CBPSliderTableViewCell : UITableViewCell
-@property (nonatomic) UISlider *slider;
-
+@property (nonatomic, assign) CGFloat fontSize;
 @end
