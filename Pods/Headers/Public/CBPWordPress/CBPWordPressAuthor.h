@@ -1,0 +1,1 @@
+../../../CBPWordPress/CBPWordPress/CBPWordPressAuthor.h

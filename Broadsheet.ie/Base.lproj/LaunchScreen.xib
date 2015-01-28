@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="post_default_image" translatesAutoresizingMaskIntoConstraints="NO" id="zmE-ay-Tgx">
+                    <rect key="frame" x="90" y="165" width="300" height="150"/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="broadsheet_black" translatesAutoresizingMaskIntoConstraints="NO" id="qTy-a1-bAB">
+                    <rect key="frame" x="142" y="335" width="196" height="40"/>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="centerY" secondItem="zmE-ay-Tgx" secondAttribute="centerY" id="BUQ-pY-lgH"/>
+                <constraint firstItem="qTy-a1-bAB" firstAttribute="top" secondItem="zmE-ay-Tgx" secondAttribute="bottom" constant="20" id="G97-ub-aUf"/>
+                <constraint firstAttribute="centerX" secondItem="qTy-a1-bAB" secondAttribute="centerX" id="evb-Ur-Ir4"/>
+                <constraint firstAttribute="centerX" secondItem="zmE-ay-Tgx" secondAttribute="centerX" id="waK-iW-8Vl"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="526" y="347"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="broadsheet_black" width="196" height="40"/>
+        <image name="post_default_image" width="300" height="150"/>
+    </resources>
+</document>
