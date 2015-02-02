@@ -16,7 +16,8 @@ static const CGFloat CBPTodayTableViewCellPadding = 10.0;
 static const CGFloat CBPTodayImageHeight = 60.0;
 
 @interface CBPTodayTableViewCell()
-@property (nonatomic, assign) BOOL didUpdateConstraints;
+@property (nonatomic, assign) BOOL constraintsUpdated;
+@property (nonatomic) UIView *detailsView;
 @property (nonatomic) UILabel *postCommentLabel;
 @property (nonatomic) UILabel *postDateLabel;
 @property (nonatomic) UIImageView *postImageView;
@@ -32,48 +33,28 @@ static const CGFloat CBPTodayImageHeight = 60.0;
         // Initialization code
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        [self setNeedsUpdateConstraints];
+        [self.contentView addSubview:self.postImageView];
+        [self.contentView addSubview:self.detailsView];
     }
     return self;
 }
 
 - (void)updateConstraints
 {
-    if (!self.didUpdateConstraints) {
-        NSDictionary *views = @{@"postCommentLabel": self.postCommentLabel,
-                                @"postDateLabel": self.postDateLabel,
-                                @"postImageView": self.postImageView,
-                                @"postTitleLabel": self.postTitleLabel};
+    if (!self.constraintsUpdated) {
+        NSDictionary *views = @{@"postImageView": self.postImageView,
+                                @"detailsView": self.detailsView};
         
         NSDictionary *metrics = @{@"imageHeight": @(CBPTodayImageHeight),
                                   @"padding": @(CBPTodayTableViewCellPadding)};
-
-        NSMutableArray *verticalContraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[postTitleLabel][postDateLabel]"
-                                                                                 options:0
-                                                                                 metrics:metrics
-                                                                                   views:views].mutableCopy;
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[postImageView(imageHeight)]-(padding)-[postTitleLabel]-(padding)-|"
-                                                                                 options:0
+        
+        
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[postImageView(imageHeight)]-(padding)-[detailsView]-(padding)-|"
+                                                                                 options:NSLayoutFormatAlignAllCenterY
                                                                                  metrics:metrics
                                                                                    views:views]];
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[postImageView]-(padding)-[postDateLabel]-[postCommentLabel]-(>=padding)-|"
-                                                                                 options:0
-                                                                                 metrics:metrics
-                                                                                   views:views]];
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.postTitleLabel
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.postImageView
-                                                                     attribute:NSLayoutAttributeTop
-                                                                    multiplier:1.0f
-                                                                      constant:0]];
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.postCommentLabel
-                                                                     attribute:NSLayoutAttributeCenterY
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.postDateLabel
-                                                                     attribute:NSLayoutAttributeCenterY
-                                                                    multiplier:1.0f
-                                                                      constant:0]];
+        
+        
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.postImageView
                                                                      attribute:NSLayoutAttributeCenterY
                                                                      relatedBy:NSLayoutRelationEqual
@@ -81,20 +62,14 @@ static const CGFloat CBPTodayImageHeight = 60.0;
                                                                      attribute:NSLayoutAttributeCenterY
                                                                     multiplier:1.0f
                                                                       constant:0]];
-        [verticalContraints addObject:[NSLayoutConstraint constraintWithItem:self.postImageView
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.postImageView
                                                                      attribute:NSLayoutAttributeHeight
                                                                      relatedBy:NSLayoutRelationEqual
                                                                         toItem:nil
                                                                      attribute:NSLayoutAttributeNotAnAttribute
                                                                     multiplier:1.0f
                                                                       constant:CBPTodayImageHeight]];
-        
-        for (NSLayoutConstraint *constraint in verticalContraints) {
-            constraint.priority = UILayoutPriorityDefaultHigh;
-        }
-        [self.contentView addConstraints:verticalContraints];
-        
-        self.didUpdateConstraints = YES;
+        self.constraintsUpdated = YES;
     }
     
     [super updateConstraints];
@@ -152,6 +127,46 @@ static const CGFloat CBPTodayImageHeight = 60.0;
     self.postTitleLabel.text = [postTitle kv_decodeHTMLCharacterEntities];
 }
 
+#pragma mark -
+- (UIView *)detailsView {
+    if (!_detailsView) {
+        _detailsView = [UIView new];
+        _detailsView.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        NSDictionary *views = @{@"postCommentLabel": self.postCommentLabel,
+                                @"postDateLabel": self.postDateLabel,
+                                @"postTitleLabel": self.postTitleLabel};
+        
+        NSDictionary *metrics = @{@"padding": @(CBPTodayTableViewCellPadding)};
+        
+        [_detailsView addSubview:self.postTitleLabel];
+        [_detailsView addSubview:self.postDateLabel];
+        [_detailsView addSubview:self.postCommentLabel];
+        
+        [_detailsView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[postTitleLabel][postDateLabel]|"
+                                                                             options:0
+                                                                             metrics:metrics
+                                                                               views:views]];
+        [_detailsView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[postTitleLabel]|"
+                                                                             options:0
+                                                                             metrics:metrics
+                                                                               views:views]];
+        [_detailsView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[postDateLabel]-[postCommentLabel]|"
+                                                                             options:0
+                                                                             metrics:metrics
+                                                                               views:views]];
+        [_detailsView addConstraint:[NSLayoutConstraint constraintWithItem:self.postCommentLabel
+                                                                 attribute:NSLayoutAttributeCenterY
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.postDateLabel
+                                                                 attribute:NSLayoutAttributeCenterY
+                                                                multiplier:1.0f
+                                                                  constant:0]];
+    }
+    
+    return _detailsView;
+}
+
 - (UILabel *)postCommentLabel
 {
     if (!_postCommentLabel) {
@@ -159,8 +174,6 @@ static const CGFloat CBPTodayImageHeight = 60.0;
         _postCommentLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _postCommentLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
         _postCommentLabel.textColor = [UIColor whiteColor];
-        
-        [self.contentView addSubview:_postCommentLabel];
     }
     
     return _postCommentLabel;
@@ -174,7 +187,7 @@ static const CGFloat CBPTodayImageHeight = 60.0;
         _postDateLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
         _postDateLabel.textColor = [UIColor whiteColor];
         
-        [self.contentView addSubview:_postDateLabel];
+        [_postDateLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
     }
     
     return _postDateLabel;
@@ -188,8 +201,6 @@ static const CGFloat CBPTodayImageHeight = 60.0;
         _postImageView.contentMode = UIViewContentModeScaleAspectFill;
         _postImageView.clipsToBounds = YES;
         _postImageView.backgroundColor = [UIColor grayColor];
-        
-        [self.contentView addSubview:_postImageView];
     }
     
     return _postImageView;
@@ -203,8 +214,6 @@ static const CGFloat CBPTodayImageHeight = 60.0;
         _postTitleLabel.numberOfLines = 2;
         _postTitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
         _postTitleLabel.textColor = [UIColor whiteColor];
-        
-        [self.contentView addSubview:_postTitleLabel];
     }
     
     return _postTitleLabel;

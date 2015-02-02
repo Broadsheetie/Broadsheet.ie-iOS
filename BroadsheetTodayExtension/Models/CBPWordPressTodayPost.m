@@ -8,6 +8,8 @@
 
 #import "CBPWordPressTodayPost.h"
 
+#import "CBPWordPressAttachment.h"
+
 @implementation CBPWordPressTodayPost
 + (instancetype)initFromDictionary:(NSDictionary *)aDictionary
 {
@@ -142,6 +144,20 @@
     }
     
     return dictionary;
+}
+
+#pragma mark -
+- (NSString *)thumbnail
+{
+    if (!_thumbnail) {
+        if ([self.attachments count]) {
+            CBPWordPressAttachment *attachment = [self.attachments firstObject];
+            
+            _thumbnail = attachment.url;
+        }
+    }
+    
+    return _thumbnail;
 }
 
 @end

@@ -75,6 +75,7 @@
 		344DC5651A783CD40045CC2B /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 344DC54B1A783CD40045CC2B /* UIImageView+WebCache.m */; };
 		344DC5661A783CD40045CC2B /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 344DC54D1A783CD40045CC2B /* UIView+WebCacheOperation.m */; };
 		344DC5671A783CD40045CC2B /* CBPTodayTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 344DC5511A783CD40045CC2B /* CBPTodayTableViewCell.m */; };
+		34F0C6EF1A7ADE6C00097301 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34F0C6EE1A7ADE6C00097301 /* Media.xcassets */; };
 		FD623EBF5BDBC91DF23E8073 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EB5F10627EDB30FAD18447B /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -268,6 +269,7 @@
 		344DC54D1A783CD40045CC2B /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
 		344DC5501A783CD40045CC2B /* CBPTodayTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBPTodayTableViewCell.h; sourceTree = "<group>"; };
 		344DC5511A783CD40045CC2B /* CBPTodayTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CBPTodayTableViewCell.m; sourceTree = "<group>"; };
+		34F0C6EE1A7ADE6C00097301 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		3EB5F10627EDB30FAD18447B /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6351CE734442712A0F823515 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		E228CF578A500549E721881C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -610,6 +612,7 @@
 				344DC5121A783A430045CC2B /* TodayViewController.h */,
 				344DC5131A783A430045CC2B /* TodayViewController.m */,
 				344DC5101A783A430045CC2B /* Supporting Files */,
+				34F0C6EE1A7ADE6C00097301 /* Media.xcassets */,
 			);
 			path = BroadsheetTodayExtension;
 			sourceTree = "<group>";
@@ -871,6 +874,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F0C6EF1A7ADE6C00097301 /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1223,6 +1227,7 @@
 				344DC51C1A783A430045CC2B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
