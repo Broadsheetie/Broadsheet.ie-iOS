@@ -54,7 +54,6 @@
         [self setValue:value forKey:@"commentId"];
     } else {
         //[super setValue:value forUndefinedKey:key];
-        
         NSLog(@"Undefined key in comment: %@ with value: %@", key, value);
     }
 }

@@ -8,13 +8,13 @@
 
 @import AVFoundation;
 @import Crashlytics;
+@import GoogleMobileAds;
 
 #import "CBPWordPress.h"
 
 #import "BSConstants.h"
 #import "CBPConstants.h"
 
-#import "DFPBannerView.h"
 #import "NSString+CBPWordPressExample.h"
 #import "NSString+HTML.h"
 #import "UIViewController+CBPWordPressExample.h"
@@ -42,13 +42,14 @@ static const CGFloat CBPLoadPostViewMultiplier = 1.5;
 static NSString * const kContentOffsetString = @"contentOffset";
 static NSString * const kFrameString = @"frame";
 
-@interface CBPPostViewController () <GADBannerViewDelegate, UIAlertViewDelegate, UIScrollViewDelegate, UIWebViewDelegate>
+@interface CBPPostViewController () <GADBannerViewDelegate, GADInterstitialDelegate, UIAlertViewDelegate, UIScrollViewDelegate, UIWebViewDelegate>
 @property (nonatomic, assign) BOOL alertShown;
 @property (nonatomic, assign) CGFloat baseFontSize;
 @property (nonatomic) UIView *containerView;
 @property (nonatomic, weak) CBPWordPressDataSource *dataSource;
 @property (nonatomic) DFPBannerView *dfpBannerView;
 @property (nonatomic) NSLayoutConstraint *dfpBannerViewHeightConstraint;
+@property (nonatomic) GADInterstitial *dfpInterstitial;
 @property (nonatomic) NSInteger index;
 @property (nonatomic) UIBarButtonItem *nextPostButton;
 @property (nonatomic) UILabel * nextTitleLabel;
@@ -62,10 +63,12 @@ static NSString * const kFrameString = @"frame";
 @property (nonatomic) UIView *previousView;
 @property (nonatomic, assign) BOOL scrollToMore;
 @property (nonatomic) UIScrollView *scrollView;
+@property (nonatomic) BOOL showInterstitial;
 @property (nonatomic) NSURL *url;
 @property (nonatomic) NSUserActivity *userActivity;
 @property (nonatomic) UIBarButtonItem *viewCommentsButton;
 @property (nonatomic) UIWebView *webView;
+@property (nonatomic, assign) NSInteger postCount;
 @end
 
 @implementation CBPPostViewController
@@ -185,6 +188,18 @@ static NSString * const kFrameString = @"frame";
     } else if (self.postId) {
         [self loadPostFromId];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willEnterForeground)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    GADRequest *request =[GADRequest request];
+#if TARGET_IPHONE_SIMULATOR
+    request.testDevices = @[ kDFPSimulatorID ];
+#endif
+    [self.dfpInterstitial loadRequest:request];
+    
+    self.postCount = 0;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -217,6 +232,10 @@ static NSString * const kFrameString = @"frame";
     [self.scrollView removeObserver:self
                          forKeyPath:kFrameString
                             context:NULL];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillEnterForegroundNotification
+                                                  object:nil];
 }
 
 - (void)toolbarButtons
@@ -276,6 +295,23 @@ static NSString * const kFrameString = @"frame";
 }
 
 #pragma mark -
+- (void)willEnterForeground
+{
+    if (self.showInterstitial) {
+        [self.dfpInterstitial presentFromRootViewController:self];
+        
+        self.showInterstitial = NO;
+        
+        self.postCount = 0;
+        
+        GADRequest *request =[GADRequest request];
+#if TARGET_IPHONE_SIMULATOR
+        request.testDevices = @[ kDFPSimulatorID ];
+#endif
+        [self.dfpInterstitial loadRequest:request];
+    }
+}
+
 - (void)displayPost
 {
     if (!self.post) {
@@ -296,6 +332,12 @@ static NSString * const kFrameString = @"frame";
     
     self.previousView.hidden = ![self canLoadPrevious];
     self.nextView.hidden = ![self canLoadNext];
+    
+    self.postCount++;
+    
+    if (self.postCount > 5) {
+        [self willEnterForeground];
+    }
 }
 
 - (void)loadPost
@@ -779,6 +821,23 @@ static NSString * const kFrameString = @"frame";
     }
 }
 
+#pragma mark - GADInterstitialDelegate
+- (void)interstitialDidReceiveAd:(DFPInterstitial *)ad
+{
+    self.showInterstitial = YES;
+}
+
+- (void)interstitialDidDismissScreen:(DFPInterstitial *)interstitial
+{
+    self.dfpInterstitial = nil;
+    
+    GADRequest *request =[GADRequest request];
+#if TARGET_IPHONE_SIMULATOR
+    request.testDevices = @[ kDFPSimulatorID ];
+#endif
+    [self.dfpInterstitial loadRequest:request];
+}
+
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
@@ -854,12 +913,23 @@ static NSString * const kFrameString = @"frame";
         _dfpBannerView.rootViewController = self;
         GADRequest *request =[GADRequest request];
 #if TARGET_IPHONE_SIMULATOR
-        request.testDevices = @[ @"Simulator" ];
+        request.testDevices = @[ kDFPSimulatorID ];
 #endif
         [_dfpBannerView loadRequest:request];
     }
     
     return _dfpBannerView;
+}
+
+- (GADInterstitial *)dfpInterstitial
+{
+    if (!_dfpInterstitial) {
+        _dfpInterstitial = [GADInterstitial new];
+        _dfpInterstitial.delegate = self;
+        _dfpInterstitial.adUnitID = BSInterstatialAdUnit;
+    }
+    
+    return _dfpInterstitial;
 }
 
 - (UILabel *)nextTitleLabel

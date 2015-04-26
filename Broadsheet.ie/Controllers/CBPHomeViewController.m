@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Crayons and Brown Paper. All rights reserved.
 //
 
+@import GoogleMobileAds;
+
 #import "CBPWordPress.h"
-#import "DFPInterstitial.h"
-#import "GADInterstitialDelegate.h"
 #import <SVPullToRefresh/SVPullToRefresh.h>
 #import "UIImageView+AFNetworking.h"
 #import "UIViewController+CBPWordPressExample.h"
@@ -32,6 +32,7 @@
 @property (nonatomic, assign) BOOL syncCellPosition;
 @property (nonatomic) UIImageView *titleImageView;
 @property (nonatomic) BOOL showInterstitial;
+@property (nonatomic, assign) NSInteger viewCount;
 @end
 
 @implementation CBPHomeViewController
@@ -92,9 +93,11 @@
                                                object:nil];
     GADRequest *request =[GADRequest request];
 #if TARGET_IPHONE_SIMULATOR
-    request.testDevices = @[ @"Simulator" ];
+    request.testDevices = @[ kDFPSimulatorID ];
 #endif
     [self.dfpInterstitial loadRequest:request];
+    
+    self.viewCount = 0;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -109,6 +112,11 @@
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.lastFetchedPostIndex inSection:0]
                               atScrollPosition:UITableViewScrollPositionBottom
                                       animated:YES];
+    }
+    
+    self.viewCount++;
+    if (self.viewCount > 3) {
+        [self willEnterForeground];
     }
 }
 
@@ -311,6 +319,14 @@
         [self.dfpInterstitial presentFromRootViewController:self];
         
         self.showInterstitial = NO;
+        
+        GADRequest *request =[GADRequest request];
+#if TARGET_IPHONE_SIMULATOR
+        request.testDevices = @[ kDFPSimulatorID ];
+#endif
+        [self.dfpInterstitial loadRequest:request];
+        
+        self.viewCount = 0;
     }
     
     [self.tableView triggerPullToRefresh];
@@ -343,7 +359,7 @@
     
     GADRequest *request =[GADRequest request];
 #if TARGET_IPHONE_SIMULATOR
-    request.testDevices = @[ @"Simulator" ];
+    request.testDevices = @[ kDFPSimulatorID ];
 #endif
     [self.dfpInterstitial loadRequest:request];
 }

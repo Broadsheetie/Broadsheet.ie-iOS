@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 Crayons and Brown Paper. All rights reserved.
 //
 
-#import "DFPBannerView.h"
+@import GoogleMobileAds;
+
 #import <SVPullToRefresh/SVPullToRefresh.h>
 
 #import "BSConstants.h"
@@ -297,7 +298,7 @@
         _dfpBannerView.rootViewController = self;
         GADRequest *request =[GADRequest request];
 #if TARGET_IPHONE_SIMULATOR
-        request.testDevices = @[ GAD_SIMULATOR_ID ];
+        request.testDevices = @[ kDFPSimulatorID ];
 #endif
         [_dfpBannerView loadRequest:request];
     }
